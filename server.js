@@ -216,6 +216,5 @@ app.get('/api/proyecto/feed', async (req, res) => {
 
 
 
-
-
-app.listen(PORT, () => console.log(`🚀 Servidor iniciado en puerto: ${PORT}`)); 
+// La parte '0.0.0.0' es obligatoria para que el Docker reciba tráfico externo
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Servidor iniciado en puerto: ${PORT}`));
