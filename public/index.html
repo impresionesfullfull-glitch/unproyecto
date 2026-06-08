@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gobernanza Distribuida - Ecosistema de Nodos</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e293b; padding-bottom: 15px; margin-bottom: 25px; }
+        .nav-brand { font-size: 22px; font-weight: bold; color: #38bdf8; }
+        .nav-user-zone { display: flex; align-items: center; gap: 15px; font-family: monospace; font-size: 13px; color: #a4b5cf; }
+        .logout-link { color: #f43f5e; text-decoration: none; font-weight: bold; cursor: pointer; transition: color 0.2s; }
+        .logout-link:hover { color: #fda4af; text-decoration: underline; }
+        
+        .panel-wrapper { background-color: #1e293b; border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+        h2 { margin-top: 0; color: #e2e8f0; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+        
+        .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+        .tab-btn { background-color: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 10px 20px; font-weight: bold; width: auto; cursor: pointer; border-radius: 4px; transition: background 0.2s, color 0.2s; }
+        .tab-btn.active { background-color: #0284c7; color: white; border-color: #0284c7; }
+
+        .cartelera-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; margin-top: 15px; }
+        .proy-card { background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; }
+        .proy-titulo { font-size: 18px; font-weight: bold; color: #38bdf8; margin-bottom: 8px; }
+        
+        .scroll-fotos { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin: 10px 0; border-radius: 4px; scroll-behavior: smooth; }
+        .scroll-fotos::-webkit-scrollbar { height: 6px; }
+        .scroll-fotos::-webkit-scrollbar-thumb { background-color: #38bdf8; border-radius: 10px; }
+        .img-card { width: 120px; height: 80px; object-fit: cover; border-radius: 4px; flex-shrink: 0; background-color: #1e293b; }
+        
+        .hidden { display: none !important; }
+        .flex-group { display: flex; gap: 15px; margin-bottom: 15px; }
+        .flex-group > div { flex: 1; }
+        label { display: block; margin-bottom: 5px; color: #94a3b8; font-size: 13px; font-weight: bold; }
+        input, textarea, select { width: 100%; padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 4px; color: #fff; box-sizing: border-box; }
+        button { background-color: #0284c7; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; transition: background 0.2s; }
+        button:hover { background-color: #0369a1; }
+        .badge { background-color: #0284c7; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; display: inline-block; }
+        
+        .console-box { background-color: #020617; border-left: 4px solid #38bdf8; font-family: monospace; padding: 15px; border-radius: 4px; overflow-x: auto; max-height: 150px; color: #4ade80; white-space: pre-wrap; margin-top: 10px; }
+        .blockchain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 15px; }
+        .block-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid #38bdf8; border-radius: 8px; padding: 15px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5); position: relative; overflow: hidden; transition: transform 0.2s; }
+        .block-card:hover { transform: translateY(-5px); }
+        .block-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background-color: #38bdf8; }
+        .block-card.genesis::before { background-color: #10b981; }
+        .block-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; border-bottom: 1px solid #334155; padding-bottom: 5px; margin-bottom: 10px; color: #38bdf8; }
+        .block-field { font-size: 12px; margin-bottom: 6px; font-family: monospace; word-break: break-all; }
+        .block-label { color: #64748b; font-weight: bold; font-family: sans-serif; display: block; font-size: 11px; text-transform: uppercase; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background-color: #1e293b; border: 1px solid #38bdf8; width: 92%; max-width: 680px; border-radius: 8px; padding: 25px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7); position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; background: none; border: none; width: auto; padding: 0; }
+        .modal-close:hover { color: #fff; }
+        
+        .modal-body-scroll { max-height: 55vh; overflow-y: auto; padding-right: 10px; margin-top: 15px; }
+        .modal-body-scroll::-webkit-scrollbar { width: 6px; }
+        .modal-body-scroll::-webkit-scrollbar-thumb { background-color: #38bdf8; border-radius: 4px; }
+        
+        .detail-row { border-bottom: 1px solid #334155; padding: 12px 0; font-size: 14px; }
+        .detail-label { color: #38bdf8; font-weight: bold; display: block; font-size: 11px; margin-bottom: 4px; text-transform: uppercase; }
+        .detail-value { font-family: monospace; word-break: break-all; color: #f1f5f9; line-height: 1.5; }
+        
+        .modal-grid-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 8px; }
+        .modal-img { width: 100%; height: 95px; object-fit: cover; border-radius: 4px; border: 1px solid #334155; background-color: #0f172a; }
+   
+   .preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 fotos por fila */
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.preview-img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #38bdf8;
+}
+.upload-btn {
+    background: #38bdf8;
+    color: #0f172a;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.overlay-login {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0f172a; /* Fondo oscuro sólido */
+    z-index: 9999; /* Siempre encima de todo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.preview-img {
+    width: 100%;       /* Ocupa todo el ancho del contenedor */
+    height: 200px;     /* Altura fija para uniformidad */
+    object-fit: cover; /* Corta la imagen para que siempre llene el espacio sin deformarse */
+    border-radius: 8px;
+    border: 2px solid #38bdf8;
+    margin-bottom: 10px;
+}
+
+
+
+
+   </style>
+</head>
+<body>
+    <div id="panelLoginGlobal" class="overlay-login">
+        <div class="panel-wrapper" style="max-width: 400px; background-color: #1e293b;">
+            <h2>🌐 Capitalismo Colaborativo</h2>
+            <div class="auth-tabs">
+                <button class="tab-btn active" id="tabLogin" onclick="conmutarModoAutenticacion('login')">INGRESAR</button>
+                <button class="tab-btn" id="tabRegistro" onclick="conmutarModoAutenticacion('registro')">CREAR CUENTA</button>
+            </div>
+            <div class="flex-group">
+                <div>
+                    <label>Correo Electrónico:</label>
+                    <input type="email" id="authEmail" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div>
+                    <label>Contraseña:</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" required>
+                </div>
+                <div>
+                    <label>Rol Operativo:</label>
+                    <select id="selectRol">
+                        <option value="postulante">POSTULANTE (Dueño de Comercio)</option>
+                        <option value="participante">PARTICIPANTE (Inversor Distribuido)</option>
+                    </select>
+                </div>
+            </div>
+            <button id="btnAccionPrincipal">Ejecutar Ingreso Seguro</button>
+        </div>
+    </div>
+
+<div id="panelPrincipal" class="container" style="display: none;">
+        <div class="navbar">
+            <div class="nav-brand">🌐 Capitalismo Colaborativo</div>
+            <div class="nav-user-zone">
+                <span id="authStatus">Estado: Conectado</span>
+                <span id="wrapperLogoutLink">| <a class="logout-link" id="lnkCerrarSesion" onclick="location.reload()">Cerrar Sesión</a></span>
+            </div>
+        </div>
+
+        <div class="upload-zone" id="dropZone" style="margin-bottom: 25px;">
+            <input type="file" id="fileInput" accept="image/*" style="display:none">
+            <div id="previewContainer" class="preview-grid"></div>
+            <button type="button" class="upload-btn">
+                + Agregar Foto o Avance
+            </button>
+        </div>
+
+        <div class="panel-wrapper hidden" id="panelPostulante">
+            <h2>🏗 Panel de Control del Postulante (Emisión)</h2>
+            <div class="flex-group">
+                <div><label>Título del Proyecto:</label><input type="text" id="pTitulo"></div>
+                <div><label>Cantidad de Nodos:</label><input type="number" id="pCantidadNodos" value="100"></div>
+                <div><label>Valor Total ($):</label><input type="number" id="pValorTotal" value="1500"></div>
+            </div>
+            <div class="flex-group">
+                <div style="flex: 1;"><label>Descripción:</label><textarea id="pDescripcion" rows="3"></textarea></div>
+                <div style="flex: 1;"><label>Beneficios:</label><textarea id="pBeneficios" rows="3"></textarea></div>
+            </div>
+            <button id="btnLanzarContrato">Lanzar Nodos a la Red de Consenso</button>
+            <h3 style="color: #38bdf8;">📋 Mis Proyectos Emitidos</h3>
+            <div class="cartelera-grid" id="carteleraPostulanteGrid"></div>
+        </div>
+
+        <div class="panel-wrapper hidden" id="panelParticipante">
+            <h2>💰 Panel de Control del Participante</h2>
+            <div id="indicadorPoderAdquisicion" style="background:#0f172a; padding: 15px; border-radius: 6px;">
+                <span style="color:#94a3b8; font-size: 12px;">PODER DE ADQUISICIÓN:</span>
+                <div id="saldoParticipante" style="font-size: 28px;">$ 0.00</div>
+                <button id="btnCargarSaldo">Cargar Saldo</button>
+            </div>
+            <h3 style="color: #a855f7;">🛍 Oportunidades</h3>
+            <div class="cartelera-grid" id="carteleraParticipanteGrid"></div>
+        </div>
+
+        <div class="panel-wrapper" id="contenedorCarteleraPublica">
+            <h2>📦 Cartelera Pública Universal</h2>
+            <div class="cartelera-grid" id="carteleraPublicaGrid"></div>
+        </div>
+
+        <div class="panel-wrapper">
+            <h2>📊 Consola de Auditoría</h2>
+            <div class="console-box" id="outputConsola">>> Consola lista...</div>
+            <button id="btnActualizarEstado">Sincronizar</button>
+        </div>
+
+        <div class="panel-wrapper">
+            <h2>📦 Libro Mayor Distribuido</h2>
+            <div class="blockchain-grid" id="blockchainGrid"></div>
+        </div>
+    </div>
+
+    <div id="modalProyecto" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="modal-close" id="btnCerrarModal">&times;</button>
+            <h2 id="modalTitulo">Detalles del Proyecto</h2>
+            <div class="modal-body-scroll">
+                <div class="detail-row"><span class="detail-label">Hash:</span><div class="detail-value" id="modalAddress"></div></div>
+                <div class="detail-row"><span class="detail-label">Owner:</span><div class="detail-value" id="modalOwner"></div></div>
+                <div class="modal-grid-fotos" id="modalGridFotos"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/elliptic/6.5.4/elliptic.min.js"></script>
+    <script src="app.js"></script>
+</body>
