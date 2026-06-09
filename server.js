@@ -199,7 +199,6 @@ app.get('/api/proyecto/obtener-galeria', async (req, res) => {
 // Endpoint para obtener el Feed con Comentarios
 app.get('/api/proyecto/feed', async (req, res) => {
     try {
-        // Obtenemos publicaciones y sus respectivos comentarios en una sola query
         const query = `
             SELECT p.*, json_agg(c.*) as comentarios
             FROM galeria_proyectos p
@@ -215,6 +214,7 @@ app.get('/api/proyecto/feed', async (req, res) => {
 
 
 
-
 // La parte '0.0.0.0' es obligatoria para que el Docker reciba tráfico externo
-app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Servidor iniciado en puerto: ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor escuchando en http://0.0.0.0:${PORT}`);
+});
