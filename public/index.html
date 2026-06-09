@@ -110,7 +110,12 @@
 }
 
 
-
+.modal-body-scroll {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 15px; /* Más espacio para que no choque con la barra */
+    margin-top: 15px;
+}
 
    </style>
 </head>
@@ -204,17 +209,36 @@
         </div>
     </div>
 
-    <div id="modalProyecto" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button class="modal-close" id="btnCerrarModal">&times;</button>
-            <h2 id="modalTitulo">Detalles del Proyecto</h2>
-            <div class="modal-body-scroll">
-                <div class="detail-row"><span class="detail-label">Hash:</span><div class="detail-value" id="modalAddress"></div></div>
-                <div class="detail-row"><span class="detail-label">Owner:</span><div class="detail-value" id="modalOwner"></div></div>
-                <div class="modal-grid-fotos" id="modalGridFotos"></div>
+<div id="modalProyecto" class="modal-overlay hidden">
+    <div class="modal-content">
+        <button class="modal-close" id="btnCerrarModal">&times;</button>
+        <h2 id="modalTitulo">Detalles del Proyecto</h2>
+        
+        <div class="modal-body-scroll">
+            <div class="detail-row">
+                <span class="detail-label">Hash:</span>
+                <div class="detail-value" id="modalAddress"></div>
             </div>
+            <div class="detail-row">
+                <span class="detail-label">Owner:</span>
+                <div class="detail-value" id="modalOwner"></div>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Faltantes:</span>
+                <div class="detail-value" id="modalFaltantes"></div>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Descripción:</span>
+                <div class="detail-value" id="modalDescripcion"></div>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Beneficios:</span>
+                <div class="detail-value" id="modalBeneficios"></div>
+            </div>
+            <div class="modal-grid-fotos" id="modalGridFotos"></div>
         </div>
     </div>
+</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/elliptic/6.5.4/elliptic.min.js"></script>
     <script src="app.js"></script>
