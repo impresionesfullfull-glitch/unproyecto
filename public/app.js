@@ -12,10 +12,9 @@ const blockchainGrid = document.getElementById('blockchainGrid');
 const btnAccionPrincipal = document.getElementById('btnAccionPrincipal');
 const wrapperLogoutLink = document.getElementById('wrapperLogoutLink');
 const panelLoginGlobal = document.getElementById('panelLoginGlobal');
-
-// Captura del DOM del Modal Avanzado con Scroll
 const modalProyecto = document.getElementById('modalProyecto');
 const modalTitulo = document.getElementById('modalTitulo');
+
 const modalAddress = document.getElementById('modalAddress');
 const modalOwner = document.getElementById('modalOwner');
 const modalFaltantes = document.getElementById('modalFaltantes');
@@ -40,9 +39,8 @@ function logConsola(mensaje) {
     outputConsola.innerText = `[${timestamp}] ${mensaje}\n` + outputConsola.innerText;
 }
 
-console.log("🚀 Motor social iniciado.");
-    distribuirCarteleras();
-})
+document.addEventListener('DOMContentLoaded', () => {
+    logConsola("🚀 Motor social inicializado en producción.");
 
 
 window.conmutarModoAutenticacion = function(modo) {
@@ -476,10 +474,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    logConsola("🚀 Motor social iniciado.");
-    distribuirCarteleras();
+	
 });
 
 distribuirCarteleras();
 consultarEstadoSistema();
 
+function logConsola(mensaje) {
+    if (!outputConsola) return;
+    const timestamp = new Date().toLocaleTimeString();
+    outputConsola.innerText = `[${timestamp}] ${mensaje}\n` + outputConsola.innerText;
+}

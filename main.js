@@ -2,7 +2,7 @@
 import { CriptoIdentidad } from './cripto_identidad.js';
 import { Transaction } from './blockchain_core.js';
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api'
 
 /**
  * Función utilitaria para hacer peticiones HTTP POST limpias sin librerías externas
