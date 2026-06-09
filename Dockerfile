@@ -1,14 +1,12 @@
 FROM node:20
 WORKDIR /app
 
-# Copiamos package.json primero para aprovechar el cache de Docker
+# Copiamos package.json primero
 COPY package*.json ./
 RUN npm install
 
-# Copiamos el resto del código
+# Copiamos todo el contenido de la carpeta actual al directorio /app
 COPY . .
 
-EXPOSE 3001
-
-# Usamos este formato para asegurar la ejecución
+# FORZAMOS la ejecución. Si server.js está en la raíz, esto debería funcionar.
 CMD ["node", "server.js"]
