@@ -1,15 +1,14 @@
 FROM node:20
-# Forzamos que el directorio de trabajo sea donde está el código
 WORKDIR /app
 
-# Copiamos todo explícitamente desde la raíz del contexto de construcción
-COPY . /app/
-
-# Listamos para verificar (esto es lo que nos dirá la verdad en el log)
-RUN ls -la /app
-
-# Instalamos
+# Copiamos package.json primero para aprovechar el cache de Docker
+COPY package*.json ./
 RUN npm install
 
+# Copiamos el resto del código
+COPY . .
+
 EXPOSE 3001
+
+# Usamos este formato para asegurar la ejecución
 CMD ["node", "server.js"]
