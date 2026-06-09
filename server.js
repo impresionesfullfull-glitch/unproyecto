@@ -10,6 +10,10 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 const app = express();
 const PORT = 3001;
 
+
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
 app.use(express.json());
 app.use(express.static('public'));
 
