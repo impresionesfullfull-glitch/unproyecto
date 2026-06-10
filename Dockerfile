@@ -1,12 +1,15 @@
-FROM node:20
+FROM node:20-slim
 WORKDIR /app
 
-# Copiamos package.json primero
-COPY package*.json ./
-RUN npm install
 
-# Copiamos todo el contenido de la carpeta actual al directorio /app
+COPY package*.json ./
+
+RUN npm ci --only=production
+
+# Copiamos el resto del código
 COPY . .
 
-# FORZAMOS la ejecución. Si server.js está en la raíz, esto debería funcionar.
+
+EXPOSE 3001
+
 CMD ["node", "server.js"]
