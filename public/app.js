@@ -7,9 +7,12 @@ let modoSeleccionado = 'login';
 let proyectosCacheados = [];
 let modoSubida = 'perfil';
 
+const API_URL = '/api';
+
 const outputConsola = document.getElementById('outputConsola');
 const blockchainGrid = document.getElementById('blockchainGrid');
 const btnAccionPrincipal = document.getElementById('btnAccionPrincipal');
+
 const wrapperLogoutLink = document.getElementById('wrapperLogoutLink');
 const panelLoginGlobal = document.getElementById('panelLoginGlobal');
 const modalProyecto = document.getElementById('modalProyecto');
@@ -22,9 +25,7 @@ const modalDescripcion = document.getElementById('modalDescripcion');
 const modalBeneficios = document.getElementById('modalBeneficios');
 const modalGridFotos = document.getElementById('modalGridFotos');
 
-const outputConsola = document.getElementById('outputConsola');
-const blockchainGrid = document.getElementById('blockchainGrid');
-const btnAccionPrincipal = document.getElementById('btnAccionPrincipal');
+
 
 
 
@@ -39,8 +40,7 @@ function logConsola(mensaje) {
     outputConsola.innerText = `[${timestamp}] ${mensaje}\n` + outputConsola.innerText;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    logConsola("🚀 Motor social inicializado en producción.");
+
 
 
 window.conmutarModoAutenticacion = function(modo) {
@@ -148,11 +148,11 @@ btnAccionPrincipal.addEventListener('click', async () => {
     if (modoSeleccionado === 'registro') {
         logConsola(`📡 Indexando cuenta de correo y registrando llave pública relacional en Neon...`);
         try {
-            const resRegistro = await fetch('/api/auth/registrar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ llavePublica: userPublicHex, rol })
-            }).then(r => r.json());
+            const resRegistro = await fetch(API_URL + '/auth/registrar', {
+            method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ llavePublica: userPublicHex, rol })
+			});.then(r => r.json());
 
             if (resRegistro.success) {
                 logConsola(`🎉 ¡Cuenta indexada con éxito en PostgreSQL Cloud! Procediendo al ingreso...`);
@@ -169,7 +169,7 @@ btnAccionPrincipal.addEventListener('click', async () => {
 
     logConsola(`🔐 Solicitando desafío matemático para el correo: ${email.toLowerCase()}...`);
     try {
-        const resDesafio = await fetch('/api/auth/desafio', {
+        const resDesafio = await fetch(API_URL + '/auth/desafio', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ llavePublica: userPublicHex, rol })
@@ -189,11 +189,11 @@ btnAccionPrincipal.addEventListener('click', async () => {
         const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
         const firmaDerivadaHex = parDeLlaves.sign(hashHex).toDER('hex');
 
-        const resVerificar = await fetch('/api/auth/verificar', {
+        const resVerificar = await fetch(API_URL + '/auth/verificar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ llavePublica: userPublicHex, firmaDerivadaHex })
-        }).then(r => r.json());
+        })  then(r => r.json());
 
    if (resVerificar.success) {
             miRolActivo = resVerificar.rol;
@@ -242,7 +242,7 @@ document.getElementById('btnLanzarContrato').addEventListener('click', async () 
 
     logConsola(`🏗 Firmando transacción de emisión estructural...`);
 
-    const res = await fetch('/api/proyecto/lanzar', {
+    const res = await fetch(API_URL + '/proyecto/lanzar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -288,7 +288,7 @@ async function cargarNodosInversor() {
 
 async function distribuirCarteleras() {
     try {
-        const proyectos = await fetch('/api/proyectos/publicos').then(r => r.json());
+        const proyectos = await fetch(API_URL + '/proyectos/publicos').then(r => r.json());
         proyectosCacheados = proyectos;
         const grid = document.getElementById('carteleraPublicaGrid');
         if (grid) {
@@ -305,7 +305,7 @@ async function distribuirCarteleras() {
 
 
 
-    document.getElementById('modalProyecto').classList.remove('hidden');
+document.getElementById('modalProyecto').classList.remove('hidden');
 
 
 
@@ -358,7 +358,7 @@ window.addEventListener('click', (e) => {
 
 async function consultarEstadoSistema() {
     try {
-        const estadoBlockchain = await fetch('/api/blockchain').then(r => r.json());
+        const estadoBlockchain = await fetch(API_URL + '/blockchain').then(r => r.json());
         logConsola(`--- AUDITORÍA EN TIEMPO REAL (NEON.TECH) ---`);
         logConsola(`-> Bloques Totales Asentados: ${estadoBlockchain.longitud_cadena}`);
         logConsola(`-> Integridad del Libro Mayor: ${estadoBlockchain.es_valida_e_inmutable ? "IMPECABLE (TRUE)" : "CORRUPTA (FALSE)"}`);
@@ -406,7 +406,7 @@ function renderizarProgreso(proyecto) {
 async function ejecutarCompraDeNodos(contractAddress, cantidad, precio) {
     logConsola(`💰 Adquiriendo ${cantidad} nodos...`);
     try {
-        const res = await fetch('/api/proyecto/adquirir', {
+        const res = await fetch(API_URL + '/proyecto/adquirir'), {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ comprador: userPublicHex, contractAddress, cantidad: parseInt(cantidad) })
@@ -452,16 +452,17 @@ window.actualizarSaldoParticipante = actualizarSaldoParticipante;
 window.distribuirCarteleras = distribuirCarteleras;
 // Inicialización
 
-// Agrega esto al final de app.js para inicializar la lógica de fotos
-const fileInput = document.getElementById('fileInput');
-
 // Variable para saber qué estamos subiendo
 let modoSubida = 'perfil'; // 'perfil' o 'proyecto'
 
+
+// Agrega esto al final de app.js para inicializar la lógica de fotos
+const fileInput = document.getElementById('fileInput');
+
+
 // --- DELEGACIÓN MAESTRA DE EVENTOS ---
+
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // Delegación de eventos maestra: escucha CUALQUIER clic
     document.body.addEventListener('click', (e) => {
         if (e.target.classList.contains('upload-btn')) {
             e.preventDefault();
@@ -473,7 +474,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (addr) abrirInspeccionModal(addr);
         }
     });
-
 	
 });
 

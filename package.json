@@ -1,12 +1,12 @@
 {
   "name": "blockchain_publica_compleja",
   "version": "1.0.0",
-  "type": "module",
+
   "description": "",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm start"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",

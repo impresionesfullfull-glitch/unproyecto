@@ -110,25 +110,24 @@ app.post('/api/proyecto/presigned-url', async (req, res) => {
     const { fileName, fileType } = req.body;
     
     // 1. Definimos 'key' AQUÍ, dentro de la función, antes de usarla
-    const key = `proyectos/${Date.now()}_${fileName}`;
+	const key = `proyectos/${Date.now()}_${fileName}`;
     
-    // 2. Ahora el comando puede acceder a 'key' sin problemas
     const command = new PutObjectCommand({
         Bucket: process.env.R2_BUCKET_NAME,
-        Key: key, 
+        Key: key,
         ContentType: fileType,
     });
 
     try {
         const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-        res.json({ url });
+        res.json({ url, key }); // IMPORTANTE: Agregué 'key' aquí para que el cliente sepa qué nombre de archivo se guardó
     } catch (err) {
         console.error("Error al generar URL:", err);
         res.status(500).json({ error: "No se pudo generar la URL" });
     }
 });
 
-// --- NUEVOS ENDPOINTS PARA GESTIÓN DE FOTOS ---
+// --- NUEVOS ENDPOINTS PARA GESTIÓN 	DE FOTOS ---
 
 // 1. Actualizar Foto de Perfil (Para Participantes y Postulantes)
 app.post('/api/perfil/actualizar', async (req, res) => {
@@ -142,25 +141,6 @@ app.post('/api/perfil/actualizar', async (req, res) => {
 });
 
 
-app.post('/api/proyecto/presigned-url', async (req, res) => {
-    const { fileName, fileType } = req.body;
-    
-    // Generamos un nombre de archivo único para evitar sobrescrituras
-    const key = `proyectos/${Date.now()}_${fileName}`;
-    
-const command = new PutObjectCommand({
-    Bucket: process.env.R2_BUCKET_NAME,
-    Key: key,
-    ContentType: fileType,
-});
-
-    try {
-        const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-        res.json({ url });
-    } catch (err) {
-        res.status(500).json({ error: "No se pudo generar la URL" });
-    }
-});
 
 app.post('/api/proyecto/agregar-foto', async (req, res) => {
     const { llavePublica, url } = req.body; 
