@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    container_name: unproyecto_app
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - R2_ENDPOINT=https://0d16c117ad38bd8d63ddf3bfaa36e3ab.r2.cloudflarestorage.com
+      - R2_ACCESS_KEY=3e8381cd56541f3f56c08bd918a62985
+      - R2_SECRET_KEY=3da7a5180788b4804a475c1967ae4a16f39d207aed86d9f6906592c3421c6585
+      - R2_BUCKET_NAME=proyecto-nodos-fotos
+      - DATABASE_URL=postgresql://neondb_owner:npg_Xj9mv7GkhQeo@ep-purple-term-ap87m2fz-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require
