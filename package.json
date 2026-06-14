@@ -1,5 +1,7 @@
 {
+
   "name": "blockchain_publica_compleja",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",

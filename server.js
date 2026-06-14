@@ -6,7 +6,7 @@ import { Blockchain, Transaction } from './blockchain_core.js';
 import { CriptoIdentidad } from './cripto_identidad.js';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
+	
 
 
 const app = express();
@@ -198,7 +198,66 @@ app.get('/api/proyecto/feed', async (req, res) => {
     }
 });
 
+// --- ENDPOINTS SOCIALES ---
 
+// 1. Crear una publicación (Avance de proyecto)
+app.post('/api/social/publicar', async (req, res) => {
+    const { autor, contenido, media_url, firma } = req.body;
+    // AQUÍ DEBERÍAS AGREGAR: CriptoIdentidad.verificarFirmaMensaje(...)
+    try {
+        const result = await pool.query(
+            'INSERT INTO publicaciones (autor, contenido, media_url, timestamp) VALUES ($1, $2, $3, $4) RETURNING id',
+            [autor, contenido, media_url, Date.now()]
+        );
+        res.json({ success: true, id: result.rows[0].id });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 2. Comentar una publicación
+app.post('/api/social/comentar', async (req, res) => {
+    const { publicacion_id, autor, texto, firma } = req.body;
+    try {
+        await pool.query(
+            'INSERT INTO comentarios (publicacion_id, autor, texto, timestamp) VALUES ($1, $2, $3, $4)',
+            [publicacion_id, autor, texto, Date.now()]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 3. Dar Like
+app.post('/api/social/like', async (req, res) => {
+    const { publicacion_id, autor } = req.body;
+    try {
+        await pool.query(
+            'INSERT INTO likes (publicacion_id, autor) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+            [publicacion_id, autor]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 4. Obtener todo el Feed para el INICIO
+app.get('/api/social/feed', async (req, res) => {
+    try {
+        const query = `
+            SELECT p.*, 
+            (SELECT COUNT(*) FROM likes WHERE publicacion_id = p.id) as total_likes,
+            (SELECT json_agg(c) FROM (SELECT * FROM comentarios WHERE publicacion_id = p.id ORDER BY timestamp ASC) c) as comentarios
+            FROM publicaciones p
+            ORDER BY p.timestamp DESC`;
+        const result = await pool.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // La parte '0.0.0.0' es obligatoria para que el Docker reciba tráfico externo
 app.listen(3001, '0.0.0.0', () => {
