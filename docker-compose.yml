@@ -1,12 +1,26 @@
 services:
+  # Tu aplicación
   app:
     build: .
     container_name: unproyecto_app
     restart: always
-    ports:
-      - "3001:3001"
-    # Aquí le decimos a Docker que lea los valores desde el archivo .env del servidor
     env_file:
       - .env
     environment:
       - NODE_ENV=production
+    # Ya no necesitamos exponer el 3001 al mundo, solo a Nginx
+    expose:
+      - "3001"
+
+  # El proxy que recibe al mundo exterior
+  nginx:
+    image: nginx:alpine
+    container_name: unproyecto_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
